@@ -57,7 +57,7 @@
 		<div id="todo-form" class="row">
 			<div class="col-sm-8 col-sm-offset-2 text-center">
 				<form>
-					<button type="submit" class="btn btn-primary btn-lg" ng-click="startStopWatch()">Start/Stop</button>
+					<button ng-disabled="loadingData" type="submit" class="btn btn-primary btn-lg" ng-click="startStopWatch()">Start/Stop</button>
 				</form>
 			</div>
 		</div>

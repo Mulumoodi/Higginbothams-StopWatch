@@ -3,6 +3,7 @@ angular.module('todoController', [])
 	// inject the Todo service factory into our controller
 	.controller('mainController', ['$scope','$http','Todos', function($scope, $http, Todos) {
 		$scope.formData = {};
+		$scope.loadingData = false;
 		$scope.loading = true;
 		Todos.get()
 			.success(function(data) {
@@ -14,6 +15,7 @@ angular.module('todoController', [])
 		// CREATE ==================================================================
 
 		$scope.startStopWatch = function() {
+			$scope.loadingData = true;
 			if(localStorage.getItem("toggleStartStop")==null || localStorage.getItem("toggleStartStop")=="startNext"){
 			if (navigator.geolocation) {
 
@@ -31,6 +33,7 @@ angular.module('todoController', [])
 						.success(function(data) {
 
 							$scope.todos = data;
+							$scope.loadingData = false;
 							$scope.loading = false;
 							localStorage.setItem("toggleStartStop", "stopNext");
 							pseudoToggle =false;
@@ -62,6 +65,7 @@ angular.module('todoController', [])
 				// if successful creation, call our get function to get all the new todos
 				.success(function(data) {
 					$scope.loading = false;
+					$scope.loadingData = false;
 					$scope.formData = {}; // clear the form so our user is ready to enter another
 					$scope.todos = data; // assign our new list of todos
 				}).error(function(){
