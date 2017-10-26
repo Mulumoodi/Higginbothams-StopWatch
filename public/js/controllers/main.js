@@ -4,36 +4,80 @@ angular.module('todoController', [])
 	.controller('mainController', ['$scope','$http','Todos', function($scope, $http, Todos) {
 		$scope.formData = {};
 		$scope.loading = true;
-
-		// GET =====================================================================
-		// when landing on the page, get all todos and show them
-		// use the service to get all the todos
 		Todos.get()
 			.success(function(data) {
+				localStorage.setItem("cachedData", data);
 				$scope.todos = data;
 				$scope.loading = false;
 			});
 
 		// CREATE ==================================================================
-		// when submitting the add form, send the text to the node API
-		$scope.createTodo = function() {
 
-			// validate the formData to make sure that something is there
-			// if form is empty, nothing will happen
-			if ($scope.formData.text != undefined) {
-				$scope.loading = true;
+		$scope.startStopWatch = function() {
+			if(localStorage.getItem("toggleStartStop")==null || localStorage.getItem("toggleStartStop")=="startNext"){
+			if (navigator.geolocation) {
 
-				// call the create function from our service (returns a promise object)
-				Todos.create($scope.formData)
+				navigator.geolocation.getCurrentPosition(function showPosition(position) {
+			console.log("Latitude: " + position.coords.latitude +
+			"<br>Longitude: " + position.coords.longitude);
+			var data=JSON.parse('{"text": "Latitude:'+position.coords.latitude+' Time:'+new Date()+' "}')
+			Todos.create(data)
 
-					// if successful creation, call our get function to get all the new todos
-					.success(function(data) {
-						$scope.loading = false;
-						$scope.formData = {}; // clear the form so our user is ready to enter another
-						$scope.todos = data; // assign our new list of todos
-					});
+				// if successful creation, call our get function to get all the new todos
+				.success(function(data) {
+					//$scope.id=data._id;
+					localStorage.setItem("lastStartedWatchId", data._id);
+					Todos.get()
+						.success(function(data) {
+
+							$scope.todos = data;
+							$scope.loading = false;
+							localStorage.setItem("toggleStartStop", "stopNext");
+							pseudoToggle =false;
+						}).error(function(){
+							console.log("No connection");
+							$scope.todos =localStorage.getItem("cachedData");
+						});
+				}).error(function(){
+					console.log("No connection");
+					$scope.todos =localStorage.getItem("cachedData");
+				});
+
+			});
+
+			} else {
+				console.log("Geolocation is not supported by this browser.");
 			}
-		};
+
+		}
+		else if (localStorage.getItem("toggleStartStop")=="stopNext"){
+			console.log("Stopping");
+			if (navigator.geolocation) {
+				navigator.geolocation.getCurrentPosition(function showPosition(position) {
+			console.log("Latitude: " + position.coords.latitude +
+			"<br>Longitude: " + position.coords.longitude);
+			var data=JSON.parse('{"text": "Latitude:'+position.coords.latitude+new Date(0)+'"}')
+			Todos.getById(localStorage.getItem("lastStartedWatchId"),data)
+
+				// if successful creation, call our get function to get all the new todos
+				.success(function(data) {
+					$scope.loading = false;
+					$scope.formData = {}; // clear the form so our user is ready to enter another
+					$scope.todos = data; // assign our new list of todos
+				}).error(function(){
+					console.log("No connection");
+					$scope.todos =localStorage.getItem("cachedData");
+				});;
+
+			});
+			} else {
+				console.log("Geolocation is not supported by this browser.");
+			}
+		}
+		//toggle=!toggle;
+		localStorage.setItem("toggleStartStop", "startNext");
+		}
+
 
 		// DELETE ==================================================================
 		// delete a todo after checking it

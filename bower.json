@@ -1,0 +1,22 @@
+{
+  "name": "node-todo",
+  "description": "Simple todo application.",
+  "main": "server.js",
+  "authors": [
+    "Scotch"
+  ],
+  "license": "MIT",
+  "homepage": "https://github.com/scotch-io/node-todo",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "public/lib",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "bootstrap": "^3.3.7",
+    "angular": "1.2.16"
+  }
+}

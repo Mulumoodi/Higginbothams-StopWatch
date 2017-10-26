@@ -19,7 +19,37 @@ module.exports = function (app) {
     app.get('/api/todos', function (req, res) {
         // use mongoose to get all todos in the database
         getTodos(res);
+
     });
+
+    app.put('/api/todos/:todo_id', function (req, res) {
+        // use mongoose to get all todos in the database
+        /*Todo.find({
+            _id: req.params.todo_id,
+        }, function (err, todo) {
+            if (err)
+                res.send(err);
+
+          todo.text=req.body.text;
+          //todo.save(function (err, updatedTank) {
+            //if (err) return handleError(err);
+            res.send(updatedTank);
+          //});
+          //res.json(todo);
+        });*/
+      var txt=req.body.text;
+        console.log(txt);
+        Todo.findByIdAndUpdate(req.params.todo_id, { $set: { stop: txt }}, { new: true }, function (err, tank) {
+          if (err) return handleError(err);
+          console.log(tank);
+            //res.send(tank);
+            getTodos(res);
+        });
+
+
+    });
+
+
 
     // create todo and send back all todos after creation
     app.post('/api/todos', function (req, res) {
@@ -33,7 +63,8 @@ module.exports = function (app) {
                 res.send(err);
 
             // get and return all the todos after you create another
-            getTodos(res);
+            //getTodos(res);
+            res.send(todo);
         });
 
     });

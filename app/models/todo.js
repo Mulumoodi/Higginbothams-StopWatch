@@ -4,5 +4,9 @@ module.exports = mongoose.model('Todo', {
     text: {
         type: String,
         default: ''
+    },
+    stop: {
+      type: String,
+      default: ''
     }
 });
